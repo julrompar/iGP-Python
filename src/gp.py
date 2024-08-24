@@ -1,5 +1,6 @@
 from collections import defaultdict, namedtuple
 import csv
+
 """ Pos,Piloto,Equipo,Finalizado,Mejor vuelta,Velocidad Máxima,Pit,Pts. Estas son las propiedades del csv de gps.
     La propiedad del csv finalizado no la uso, pero tampoco la quito del documento, por si la necesito en un futuro.
     TODO: Buscarle un uso a la propiedad finalizado (habría que pasarla a segundos, menos la del primer puesto, que puede ser un 
@@ -71,6 +72,8 @@ def lee_qualy(fichero):
             res.append(tupla)
     return sorted(res, key=lambda x: x.posicion)
 
+#TODO: Unir estas dos funciones en una sola
+
 def campeonato(puntuaciones):
     res = defaultdict(int)
     for p in puntuaciones:
@@ -85,6 +88,8 @@ def get_campeonato_constructores(puntuaciones):
     
     return sorted(res.items(), key=lambda x: x[1], reverse=True)
 
+#TODO: Unir estas dos funciones en una sola. También se le puede añadir un parámetro para que devuelva los resultados de la qualy y/o de la carrera
+
 def get_resultados_gp_equipo(gp, equipo):
     datos = lee_gp('data/gp_' + gp + '.csv')
     return [d for d in datos if d.equipo == equipo]
@@ -93,24 +98,32 @@ def get_resultados_gp(gp):
     datos = lee_gp('data/gp_' + gp + '.csv')
     return [(d.piloto, d.equipo, d.posicion) for d in datos]
 
-def get_pos_media_equipo(decisor, equipo):
+def get_pos_media_equipo(equipo,decisor= None):
+    datos_gp = lee_gp('data/gps/puntos.csv')
+    datos_qualy = lee_qualy('data/qualy/qualys.csv')
+    pilotos = [p.piloto for p in datos_gp if p.equipo == equipo or p.abreviatura == equipo]
 
-    if decisor == 'c' or  decisor == 'C' or decisor == 'Carrera' or decisor == 'carrera':
-        datos_gp = lee_gp('data/gps/puntos.csv')
-        pilotos = [p.piloto for p in datos_gp if p.equipo == equipo or p.abreviatura == equipo]
+    if decisor in ['c', 'C', 'Carrera', 'carrera']:
         res = defaultdict(float)
         for p in pilotos:
             posiciones = [d.posicion for d in datos_gp if d.piloto == p]
-            res[p] = sum(posiciones) / len(posiciones)
+            res[p] = round(sum(posiciones) / len(posiciones),2)
         return sorted(res.items(), key=lambda x: x[1])
-    elif decisor == 'q'or decisor == 'Q' or decisor == 'Qualy' or decisor == 'qualy' or decisor == 'Clasificacion' or decisor == 'clasificacion':
-        datos_qualy = lee_qualy('data/qualy/qualys.csv')
-        pilotos = [p.piloto for p in datos_qualy if p.equipo == equipo or p.abreviatura == equipo]
+    elif decisor in ['q', 'Q', 'Qualy', 'qualy', 'Clasificacion', 'clasificacion', 'Clasificación', 'clasificación']:
         res = defaultdict(float)
         for p in pilotos:
             posiciones = [d.posicion for d in datos_qualy if d.piloto == p]
-            res[p] = sum(posiciones) / len(posiciones)
+            res[p] = round(sum(posiciones) / len(posiciones),2)
         return sorted(res.items(), key=lambda x: x[1])
+    else:
+        res = defaultdict(float)
+        for p in pilotos:
+            posicionesCarrera = [d.posicion for d in datos_gp if d.piloto == p]
+            posicionesQualy = [d.posicion for d in datos_qualy if d.piloto == p]
+            res[p] = (('Carrera', round(sum(posicionesCarrera) / len(posicionesCarrera),2)), ('Qualy', round(sum(posicionesQualy) / len(posicionesQualy),2)))
+        return sorted(res.items(), key=lambda x: x[1])
+        
+
 
     
 
