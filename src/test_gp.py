@@ -35,6 +35,10 @@ def test_clasificacion(puntuaciones, decisor = None):
     clasificacion = get_clasificacion(puntuaciones, decisor)
     print(clasificacion)
 
+def test_vueltas_rapidas(datos):
+    pilotos = get_pilotos_mas_vr(datos)
+    print(pilotos)
+
 def main():
     RESULTADOS_GP= lee_gp('data/gps/gp_austria.csv')
     RESULTADOS_GENERALES = lee_gp('data/gps/puntos.csv')
@@ -45,8 +49,9 @@ def main():
     #test_campeonato_constructores(PUNTUACIONES) #
     #test_resultados_gp_equipo('monaco', 'HIS') #Esperamos los 2 pilotos del Vela
     #test_resultados_gp('monaco') #Esperamos todos los resultados del gp de Monaco. Solo se muestran los pilotos, los equipos y las posiciones
-    test_pos_media_equipo('WAT') #Esperamos las posiciones medias de los pilotos del equipo WAT en el campeonato
+    #test_pos_media_equipo('WAT') #Esperamos las posiciones medias de los pilotos del equipo WAT en el campeonato
     #test_clasificacion(RESULTADOS_GENERALES)
+    test_vueltas_rapidas(RESULTADOS_GENERALES)
     
 
 if __name__ == '__main__':

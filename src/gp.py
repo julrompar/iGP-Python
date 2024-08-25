@@ -37,7 +37,7 @@ def lee_gp(fichero):
             }
             tupla = Carrera(posicion,piloto,equipo,switcher.get(equipo),mejor_vuelta,velocidad_maxima,pitstops,puntos)
             res.append(tupla)
-    return sorted(res, key=lambda x: x.posicion)
+    return res
 
 def lee_qualy(fichero):
     res = []
@@ -161,7 +161,7 @@ de los gps y las qualys. Podemos obtener o solo los de los gps o solo los de la 
 del if y elif para ver las opciones permitidas)
 
 @returns
-En cualquiera de sus ramas, devuelve una lista de tuplas obtenida a partir de un dict.items(), cada tupla formada por el piloto y su posición media. Si 
+En cualquiera de sus ramas, devuelve una lista de tuplas obtenida a partir de un dict.items(). En los dos primeros casos, cada tupla formada por el piloto y su posición media. Si 
 queremos las posiciones medias tanto de la qualy como de la carrera, obtendremos una lista de tuplas, siguiendo las tuplas el siguiente esquema:
 (Nombre piloto, [(Carrera, posición media), (Qualy, posición media)]
 
@@ -177,8 +177,36 @@ def get_pos_media_equipo(equipo,decisor= None):
         return get_pos_media_qualy(datos_qualy,pilotos)
     else:
         return get_all_posiciones_medias(datos_gp,datos_qualy,pilotos)
-        
+    
+"""
+@params
+equipo: nombre o abreviatura del equipo del que queremos obtener la diferencia de posiciones medias.
 
+@returns
+Devuelve una lista de tuplas con la diferencia de posiciones medias entre la qualy y la carrera de los pilotos de un equipo. Si el resultado es negastivo, 
+la media de las posiciones en carrera es mayor, por lo que se han perdido puestos en la carrera respecto a la posición de salida en la qualy. Si el resultado es positivo,
+la media de las posiciones en carrera es menor, por lo que se han ganado puestos en la carrera respecto a la posición de salida en la qualy.
+"""
+
+def get_diferencia_posiciones_medias(equipo):
+    datos_gp = lee_gp('data/gps/puntos.csv')
+    datos_qualy = lee_qualy('data/qualy/qualys.csv')
+    pilotos = {p.piloto for p in datos_gp if p.equipo == equipo or p.abreviatura == equipo}
+    posicionesCarrera = dict(get_pos_media_carrera(datos_gp, pilotos))
+    posicionesQualy = dict(get_pos_media_qualy(datos_qualy, pilotos))
+    res = defaultdict(float)
+    for p in pilotos:
+        res[p] = round(posicionesQualy.get(p) - posicionesCarrera.get(p),2)
+    return sorted(res.items(), key = lambda x: x[1])
+        
+def get_pilotos_mas_vr(datos):
+    res = defaultdict(int)
+    for i in range(0,len(datos)+1, 14):
+            datosGranPremio = datos[i:i+14]
+            for d in datosGranPremio:
+                if d.mejor_vuelta == min([d.mejor_vuelta for d in datosGranPremio]):
+                    res[d.piloto] += 1
+    return sorted(res.items(), key = lambda x: x[1], reverse = True)
 
     
 
