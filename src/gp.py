@@ -70,7 +70,7 @@ def lee_qualy(fichero):
             }
             tupla = Qualy(posicion,piloto,equipo,switcherAbreviatura.get(equipo),tiempo,diferencia,switcherNeumaticos.get(neumaticos))
             res.append(tupla)
-    return sorted(res, key=lambda x: x.posicion)
+    return res
 
 
 
@@ -205,8 +205,45 @@ def get_pilotos_mas_vr(datos):
             datosGranPremio = datos[i:i+14]
             for d in datosGranPremio:
                 if d.mejor_vuelta == min([d.mejor_vuelta for d in datosGranPremio]):
-                    res[d.piloto] += 1
+                    res[(d.piloto, d.abreviatura)] += 1
     return sorted(res.items(), key = lambda x: x[1], reverse = True)
+
+
+def get_pilotos_mas_poles(datos):
+    res = defaultdict(int)
+    for i in range(0,len(datos)+1, 14):
+            datosGranPremio = datos[i::14]
+            break
+
+    for d in datosGranPremio:
+        res[(d.piloto, d.abreviatura)] += 1
+    
+    return sorted(res.items(), key = lambda x: x[1], reverse = True)
+
+#TODO: Testear estas dos funciones
+def get_equipos_mas_vr(datos):
+    res = defaultdict(int)
+    for i in range(0,len(datos)+1, 14):
+            datosGranPremio = datos[i:i+14]
+            for d in datosGranPremio:
+                if d.mejor_vuelta == min([d.mejor_vuelta for d in datosGranPremio]):
+                    res[d.equipo] += 1
+    return sorted(res.items(), key = lambda x: x[1], reverse = True)
+
+def get_equipos_mas_poles(datos):
+    res = defaultdict(int)
+    for i in range(0,len(datos)+1, 14):
+            datosGranPremio = datos[i::14]
+            break
+
+    for d in datosGranPremio:
+        res[d.equipo] += 1
+    
+    return sorted(res.items(), key = lambda x: x[1], reverse = True)
+
+
+
+
 
     
 
