@@ -140,9 +140,15 @@ def get_pos_media_carrera(datos,pilotos):
 
 def get_pos_media_qualy(datos,pilotos):
     res = defaultdict(float)
-    for p in pilotos:
-        posiciones = [d.posicion for d in datos if d.piloto == p]
-        res[p] = round(sum(posiciones) / len(posiciones),2)
+
+    if isinstance(pilotos, set):
+        for p in pilotos:
+            posiciones = [d.posicion for d in datos if d.piloto == p[0]]
+            res[p] = round(sum(posiciones) / len(posiciones),2)
+    else:
+        for p in pilotos:
+            posiciones = [d.posicion for d in datos if d.piloto == p]
+            res[p] = round(sum(posiciones) / len(posiciones),2)
     return sorted(res.items(), key=lambda x: x[1])
 
 def get_all_posiciones_medias(datos_gp,datos_qualy,pilotos):
@@ -183,7 +189,7 @@ def get_pos_media_equipo(equipo,decisor= None):
 equipo: nombre o abreviatura del equipo del que queremos obtener la diferencia de posiciones medias.
 
 @returns
-Devuelve una lista de tuplas con la diferencia de posiciones medias entre la qualy y la carrera de los pilotos de un equipo. Si el resultado es negastivo, 
+Devuelve una lista de tuplas con la diferencia de posiciones medias entre la qualy y la carrera de los pilotos de un equipo. Si el resultado es negativo, 
 la media de las posiciones en carrera es mayor, por lo que se han perdido puestos en la carrera respecto a la posición de salida en la qualy. Si el resultado es positivo,
 la media de las posiciones en carrera es menor, por lo que se han ganado puestos en la carrera respecto a la posición de salida en la qualy.
 """
@@ -240,6 +246,27 @@ def get_equipos_mas_poles(datos):
         res[d.equipo] += 1
     
     return sorted(res.items(), key = lambda x: x[1], reverse = True)
+
+def get_pilotos_de_equipo(equipo):
+    datos = lee_gp('data/gps/puntos.csv')
+    return {d.piloto for d in datos if d.equipo == equipo or d.abreviatura == equipo}
+
+def get_all_pilotos():
+    datos = lee_gp('data/gps/puntos.csv')
+    return {(d.piloto, d.abreviatura) for d in datos}
+
+def get_top_n_clasificadores(n):
+    datos = lee_qualy('data/qualy/qualys.csv')
+    pilotos = get_all_pilotos()
+    posiciones = get_pos_media_qualy(datos, pilotos)
+    return posiciones[:n]
+
+
+
+    
+
+
+
 
 
 

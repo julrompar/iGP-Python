@@ -43,6 +43,19 @@ def test_poles(datos):
     pilotos = get_pilotos_mas_poles(datos)
     print(pilotos)
 
+def test_diferencia_posiciones(equipo):
+    posiciones = get_diferencia_posiciones_medias(equipo)
+    print(posiciones)
+
+def test_posicion_media_qualy(datos):
+    pilotos = get_all_pilotos()
+    posiciones = get_pos_media_qualy(datos, pilotos)
+    print(posiciones)
+
+def top_n_clasificadores(n):
+    clasificadores = get_top_n_clasificadores(n)
+    print(clasificadores)
+
 def main():
     RESULTADOS_GP= lee_gp('data/gps/gp_austria.csv')
     RESULTADOS_GENERALES = lee_gp('data/gps/puntos.csv')
@@ -57,8 +70,10 @@ def main():
     #test_pos_media_equipo('WAT') #Esperamos las posiciones medias de los pilotos del equipo WAT en el campeonato
     #test_clasificacion(RESULTADOS_GENERALES)
     #test_vueltas_rapidas(RESULTADOS_GENERALES)
-    test_poles(QUALYS_GENERALES)
-    
+    #test_poles(QUALYS_GENERALES)
+    #test_diferencia_posiciones('WAT')
+    #test_posicion_media_qualy(QUALYS_GENERALES)
+    top_n_clasificadores(5)
 
 if __name__ == '__main__':
     main()
